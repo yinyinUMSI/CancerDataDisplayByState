@@ -2,6 +2,7 @@
 <html>
 <head>
 	<script src="https://d3js.org/d3.v3.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 	<title>US Cancer Data By State</title>
 </head>
 <body>
@@ -9,12 +10,26 @@
 	<script>
 		//ageAdjustedRate: new cancer rate; caseCount: case count; State: state;
 		var data = [];
-		d3.csv('data.csv', (dt)=> data.push({
-			'state': dt.State,
-			'rate': dt.ageAdjustedRate,
-			'case': dt.caseCount
-		}));
-		console.log(data);
+		$(document).ready(function(){
+			$.ajax({
+   				url:"https://docs.google.com/spreadsheets/d/1Zm6oyYsh79B0IEUKRewl-UhAtYu1LqT7usjR2EpZ5BA/edit?usp=sharing",
+   				jsonp: "callback",
+   				dataType:"jsonp",
+   				success:function(data) {
+   					console.log(data);
+   				},
+   				error: function() {
+   					console.log("error");
+   				}
+   			})
+		});
+   		
+		// d3.csv('https://docs.google.com/spreadsheets/d/1Zm6oyYsh79B0IEUKRewl-UhAtYu1LqT7usjR2EpZ5BA/edit?usp=sharing', (dt)=> data.push({
+		// 	'state': dt.State,
+		// 	'rate': dt.ageAdjustedRate,
+		// 	'case': dt.caseCount
+		// }));
+		// console.log(data);
 		
 	</script>
 </body>
