@@ -7,7 +7,15 @@
 <body>
 	<h1>US Cancer Data By State</h1>
 	<script>
+		//ageAdjustedRate: new cancer rate; caseCount: case count; State: state;
+		var data = [];
+		d3.csv('data.csv', (dt)=> data.push({
+			'state': dt.State,
+			'rate': dt.ageAdjustedRate,
+			'case': dt.caseCount
+		}));
+		console.log(data);
 		
 	</script>
 </body>
-</html>>
+</html>
