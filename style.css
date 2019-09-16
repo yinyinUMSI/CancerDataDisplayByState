@@ -1,0 +1,11 @@
+.innerborders {
+	stroke: white;
+	stroke-width: 1px;
+	fill:none;
+}
+.states {
+	fill: grey;
+}
+#title {
+	text-align: center;
+}
