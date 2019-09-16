@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://d3js.org/topojson.v2.min.js"></script>
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+	<title>2019 US Cancer Cases By State</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <div id='title'>
+	<h2>2019 US Cancer Cases By State</h1>
+  </div>
+  <div id='chart'></div>
+	<script>
+    var data = {};
+    var width = 1000, height = 1000;
+    var a = d3.rgb(0,255,255);  //浅蓝色
+    var b = d3.rgb(0,0,255);    //蓝色
+    // var colorScale = d3.scaleSequential().domain([2000,120000]).interpolator(d3.interpolatePuRd);
+    //var computeColor = d3.interpolate(a,b);
+    var path = d3.geoPath();
+    var svg = d3.select('#chart').append('svg').attr('width', width).attr('height', height);
+    var linear = d3.scaleLinear()
+        .domain([2000, 120000])
+        .range([0, 1]);
+
+    //load data
+		d3.csv('https://gist.githubusercontent.com/yinyinUMSI/febd7cdadb37ff2555bfb16fc05f9dcd/raw/049ac53ac73a55fe9a24e95e52203e31926dba3c/gistfile1.txt', function(dt) {
+        for (let i=0; i< dt.length; i++) {
+          var id = parseInt(dt[i].id);
+          data[id] = {'name': dt[i].State, 'rate': dt[i].ageAdjustedRate, 'case': dt[i].caseCount};
+          }
+         
+          console.log(typeof(id),data[id]['case']);
+          
+
+          d3.json('https://d3js.org/us-10m.v1.json', function(dt) {
+            console.log(data);
+            svg.append('g')
+                .attr('class','states')
+               .selectAll('path')
+               .data(topojson.feature(dt, dt.objects.states).features)
+               .enter()
+               .append('path')
+               .attr('d', path)
+               .attr('fill', function(d) { return d3.interpolatePuRd(linear(data[parseInt(d['id'])]['case'])) } );
+
+            svg.append("path")
+            .attr("d", path(topojson.mesh(dt, dt.objects.states, function(a, b) { return a !== b; })))
+            .attr('class', 'innerborders');
+          });
+        
+    });
+
+    //Append a defs (for definition) element to your SVG
+    var defs = svg.append("defs");
+    var linearGradient = defs.append("linearGradient")
+    .attr("id", "linear-gradient");
+    linearGradient.append("stop")
+    .attr("offset", "0%")
+    .attr("stop-color", d3.interpolatePuRd(0)); 
+
+//Set the color for the end (100%)
+    linearGradient.append("stop")
+        .attr("offset", "100%")
+        .attr("stop-color", d3.interpolatePuRd(1)); 
+    linearGradient.append("stop")
+        .attr("offset", "50%")
+        .attr("stop-color", d3.interpolatePuRd(0.5));
+    //Draw the rectangle and fill with gradient
+svg.append("rect")
+    .attr("width", 300)
+    .attr("height", 20)
+    .attr('transform', 'translate(600,650)')
+    .style("fill", "url(#linear-gradient)");
+svg.append('text')
+   .text('2000')
+   .attr("font-size", "12px")
+   .attr("fill", "black")
+   .attr('transform', 'translate(600,685)');
+svg.append('text')
+   .text('120000')
+   .attr("font-size", "12px")
+   .attr("fill", "black")
+   .attr('transform', 'translate(870,685)');
+svg.append('text')
+   .text('Cancer Cases')
+   .attr("font-size", "16px")
+   .attr("fill", "black")
+   .attr('transform', 'translate(500,660)');
+    
+
+	</script>
+</body>
+<!-- Reference: http://bl.ocks.org/michellechandra/0b2ce4923dc9b5809922,   
+            https://observablehq.com/@d3/bivariate-choropleth?collection=@d3/d3-geo -->
+</html>
+
